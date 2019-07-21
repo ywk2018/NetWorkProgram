@@ -5,9 +5,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -42,11 +49,33 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 //        使用okhttp封装方法，进行访问网络
-        String adress = "http:/baidu.com";
+        String adress = "http://10.0.2.2/get_json_data.json";
         OkhttpUtil.SendOkhttpClient(adress, new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                Log.d(TAG, "返回的数据是" + response.body().string());
+//                String str = response.body().string();
+//                try {
+//                    JSONArray jsonArray = new JSONArray(str);
+//                    for (int i = 0; i < jsonArray.length(); i++){
+//                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+//                        String name = jsonObject.getString("name");
+//                        String age = jsonObject.getString("age");
+//                        String sex = jsonObject.getString("sex");
+//
+//                        Log.d(TAG, "姓名为" + name);
+//                        Log.d(TAG, "年龄为" + age);
+//                        Log.d(TAG, "性别为" + sex);
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+                Gson gson = new Gson();
+                List<PersonBean> PersonList  = gson.fromJson(response.body().string(), new TypeToken<List<PersonBean>>(){}.getType());
+                for (PersonBean person : PersonList){
+                    Log.d(TAG, "姓名为" + person.getName());
+                    Log.d(TAG, "年龄为" + person.getAge());
+                    Log.d(TAG, "性别为" + person.getSex());
+                }
             }
 
             @Override
@@ -54,6 +83,5 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "请求失败");
             }
         });
-
     }
 }
